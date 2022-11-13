@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="uni.fmi.masters.UserBean" %>
+<%@ page import="uni.fmi.masters.entity.UserEntity" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +25,7 @@
 <body>
 
 <%
-	UserBean user = (UserBean) request.getAttribute("loggedUser");
+	UserEntity user = (UserEntity) request.getAttribute("loggedUser");
 %>
 
 <div class="home-page">

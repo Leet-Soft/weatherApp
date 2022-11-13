@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import uni.fmi.masters.entity.FriendsRequestsBean;
+import uni.fmi.masters.entity.StatusBean;
+import uni.fmi.masters.entity.UserEntity;
+
 /**
  * Servlet implementation class HelloServlet
  */
@@ -23,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 public class HelloServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
-	UserBean user = null;
+	UserEntity user = null;
 	
 	ArrayList<StatusBean> statuses = new ArrayList<>();
 	ArrayList<FriendsRequestsBean> requests = 
@@ -42,10 +46,10 @@ public class HelloServlet extends HttpServlet {
         statuses.add(new StatusBean(-68, "Аляска", "Малко захладня!"));
         statuses.add(new StatusBean(60, "Пловдив", "Айляк майна!"));
         
-        UserBean friend1 = 
-        		new UserBean("goshko", "hubaveca@abv.bg");
-        UserBean friend2 = 
-        		new UserBean("mariika", "sramejlivata@abv.bg");
+        UserEntity friend1 = 
+        		new UserEntity("goshko", "hubaveca@abv.bg");
+        UserEntity friend2 = 
+        		new UserEntity("mariika", "sramejlivata@abv.bg");
         
         requests.add(new FriendsRequestsBean(friend1, user, "friends", true));
         
@@ -146,7 +150,7 @@ public class HelloServlet extends HttpServlet {
 			return;
 		}
 		
-		user = new UserBean(regUsername, regPassword, email);
+		user = new UserEntity(regUsername, regPassword, email);
 		
 		startingData();
 		
@@ -164,7 +168,7 @@ public class HelloServlet extends HttpServlet {
 
 	}
 
-	private boolean insertUserToDB(UserBean user) throws SQLException {
+	private boolean insertUserToDB(UserEntity user) throws SQLException {
 		Connection conn = null;
 		
 		try {
@@ -248,7 +252,7 @@ public class HelloServlet extends HttpServlet {
 			
 			if(rs.first()) {
 				
-				user = new UserBean();
+				user = new UserEntity();
 				
 				user.setUsername(username);
 				user.setPassword(password);		

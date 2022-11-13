@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>'
 <%@page import="java.util.ArrayList"%>
-<%@page import="uni.fmi.masters.StatusBean"%>
+<%@page import="uni.fmi.masters.entity.StatusBean"%>
 
 <!DOCTYPE html>
 <html lang="en">
