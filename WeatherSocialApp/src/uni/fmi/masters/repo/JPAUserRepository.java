@@ -12,6 +12,10 @@ import org.hibernate.TransactionException;
 import uni.fmi.masters.entity.UserEntity;
 
 public class JPAUserRepository {
+	
+	public JPAUserRepository() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public EntityManager getEntityManager() {
 		EntityManagerFactory factory = 

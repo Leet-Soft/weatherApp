@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import uni.fmi.masters.entity.FriendsRequestsBean;
 import uni.fmi.masters.entity.StatusBean;
 import uni.fmi.masters.entity.UserEntity;
+import uni.fmi.masters.repo.JPAUserRepository;
 
 /**
  * Servlet implementation class HelloServlet
@@ -26,6 +27,8 @@ import uni.fmi.masters.entity.UserEntity;
 @WebServlet("/HelloServlet")
 public class HelloServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	JPAUserRepository userRepo = new JPAUserRepository();
     
 	UserEntity user = null;
 	
@@ -153,8 +156,9 @@ public class HelloServlet extends HttpServlet {
 		user = new UserEntity(regUsername, regPassword, email);
 		
 		startingData();
+				
 		
-		if(insertUserToDB(user)) {
+		if(userRepo.createUser(user)) {
 			request.getRequestDispatcher("index.html")
 			.forward(request, response);
 		}else {
@@ -204,7 +208,7 @@ public class HelloServlet extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
-		if(validateUser(username,password)) {
+		if(userRepo.findUserByUsernameAndPassword(username, password) != null) {
 			
 			request.setAttribute("loggedUser", user);
 			request.getRequestDispatcher("profile.jsp")
