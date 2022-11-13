@@ -11,11 +11,14 @@ import org.hibernate.TransactionException;
 
 import uni.fmi.masters.entity.UserEntity;
 
-public class JPAUserRepository {
+public class JPAUserRepository extends BaseRepository<UserEntity>{
 	
+
+
 	public JPAUserRepository() {
-		// TODO Auto-generated constructor stub
+		super(UserEntity.class);		
 	}
+
 
 	public EntityManager getEntityManager() {
 		EntityManagerFactory factory = 
