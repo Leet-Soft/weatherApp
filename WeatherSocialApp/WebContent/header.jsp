@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <header>
             <div class="container">
                 <nav class="navbar navbar-default">
@@ -27,13 +28,24 @@
                         <!-- Collect the nav links, forms, and other content for toggling -->
                         <div class="collapse navbar-collapse" id="navbar-collapse">
                             <ul class="nav navbar-nav navbar-right">
-                                <li class="active">
+                           		<c:if test='${navLocation.equals("home")}'>
+                                	<li class="active">
+                                </c:if>
+                               	<c:if test='${!navLocation.equals("home")}'>
+                                	<li>
+                                </c:if>
                                     <a href="HelloServlet?action=home">
                                         <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
                                         <span class="nav-label">Начало</span>
                                     </a>
                                 </li>
-                                <li>
+                                <li
+                                <% if(session.getAttribute("navLocation").equals("friends")) { %>
+                                
+                                	class="active"
+                                
+                                <% } %>
+                                >
                                     <a href="HelloServlet?action=friends">
                                         <i class="fa fa-users" aria-hidden="true"></i>
                                         <span class="nav-label">Приятели</span>

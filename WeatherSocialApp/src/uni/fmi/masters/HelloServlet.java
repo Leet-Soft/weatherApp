@@ -27,7 +27,7 @@ import uni.fmi.masters.repo.JPAUserRepository;
 @WebServlet("/HelloServlet")
 public class HelloServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+	 
 	JPAUserRepository userRepo = new JPAUserRepository();
     
 	UserEntity user = null;
@@ -170,38 +170,7 @@ public class HelloServlet extends HttpServlet {
 		}
 		
 
-	}
-
-	private boolean insertUserToDB(UserEntity user) throws SQLException {
-		Connection conn = null;
-		
-		try {
-			conn = getConnection();
-			
-			String sql = "INSERT INTO USERS "
-					+ "(USERNAME, PASSWORD, EMAIL) "
-					+ " VALUES (?,?,?)";
-			
-			PreparedStatement pst = conn.prepareStatement(sql);
-			
-			pst.setString(1, user.getUsername());
-			pst.setString(2, hashPassword(user.getPassword()));
-			pst.setString(3, user.getEmail());
-
-			if(pst.executeUpdate() == 1)
-				return true;	
-			
-		} catch (SQLException e) {
-		
-			e.printStackTrace();
-		}finally {
-			if(conn != null)
-				conn.close();
-		}
-		
-		return false;		
-		
-	}
+	}	
 
 	private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 			
@@ -234,82 +203,5 @@ public class HelloServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		super.doDelete(req, resp);
 	}
-	
-	
-	private boolean validateUser(String username, String password) throws SQLException {
-		
-		Connection conn = null;
-		ResultSet rs = null;
-		
-		password = hashPassword(password);
-		
-		try {
-			conn = getConnection();
-			String sql  = "SELECT ID, email, avatar "
-					+ "FROM USERS WHERE USERNAME=? AND PASSWORD=?";
-			
-			PreparedStatement pst = conn.prepareStatement(sql);
-			pst.setString(1, username);
-			pst.setString(2, password);
-			
-			rs = pst.executeQuery();
-			
-			if(rs.first()) {
-				
-				user = new UserEntity();
-				
-				user.setUsername(username);
-				user.setPassword(password);		
-				user.setEmail(rs.getString("email"));				
-				user.setId(rs.getInt("id"));
-				user.setAvatar(rs.getString("avatar"));				
-				
-				return true;
-			}	
-		}catch(SQLException e) {
-			System.out.println(e.getMessage());
-		}finally {
-			if(rs != null)
-				rs.close();
-			
-			if(conn != null)
-				conn.close();
-		}
-		
-		return false;		
-	}
-	
-	private String hashPassword(String password) {
-		
-		StringBuilder sb = new StringBuilder();
-		
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(password.getBytes());
-			
-			byte[] bytes = md.digest();
-			
-			for(int i = 0; i < bytes.length; i++) {
-				sb.append((char)bytes[i]);
-			}
-			
-			
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		
-		return sb.toString();		
-	}
-	
-	private Connection getConnection() throws SQLException {
-		
-		try {
-			Class.forName("org.h2.Driver");
-			
-		}catch(ClassNotFoundException ex) {
-			System.out.println(ex.getMessage());
-		}
-		
-		return DriverManager.getConnection("jdbc:h2:~/test", "sa", "123");
-	}
+
 }

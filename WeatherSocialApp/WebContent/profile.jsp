@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="uni.fmi.masters.entity.UserEntity" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,6 +30,8 @@
 %>
 
 <div class="home-page">
+
+		<c:set scope="session" var="navLocation" value="profile"></c:set>
 
         <%@ include file="header.jsp" %>
 

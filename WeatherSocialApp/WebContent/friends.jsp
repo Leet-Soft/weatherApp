@@ -31,6 +31,7 @@
 %>
 
 <div class="friends-page">
+	<c:set scope="session" var="navLocation" value="friends"></c:set>
 
     <%@ include file="header.jsp" %>
 

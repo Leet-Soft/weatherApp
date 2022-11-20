@@ -1,5 +1,7 @@
 package uni.fmi.masters.repo;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -11,68 +13,83 @@ import org.hibernate.TransactionException;
 
 import uni.fmi.masters.entity.UserEntity;
 
-public class JPAUserRepository extends BaseRepository<UserEntity>{
-	
-
+public class JPAUserRepository extends BaseRepository<UserEntity> {
 
 	public JPAUserRepository() {
-		super(UserEntity.class);		
+		super(UserEntity.class);
 	}
-
 
 	public EntityManager getEntityManager() {
-		EntityManagerFactory factory = 
-				Persistence.createEntityManagerFactory("UserPU");
-		
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("UserPU");
+
 		return factory.createEntityManager();
 	}
-	
-	
+
 	public boolean createUser(UserEntity user) {
-		
+
 		EntityManager em = getEntityManager();
-		
+		user.setPassword(hashPassword(user.getPassword()));
+
 		try {
 			em.getTransaction().begin();
 			em.persist(user);
 			em.getTransaction().commit();
-		}catch (TransactionException e) {
-			
+		} catch (TransactionException e) {
+
 			System.out.println(e.getMessage());
-			
+
 			em.getTransaction().rollback();
-			
+
 			return false;
-		}finally {
+		} finally {
 			em.close();
-		}		
-		
+		}
+
 		return true;
 	}
-	
-	public UserEntity findUserByUsernameAndPassword(String username,
-			String password) {
-		
+
+	public UserEntity findUserByUsernameAndPassword(String username, String password) {
+
 		EntityManager em = getEntityManager();
-		
-		String query = "SELECT u FROM UserEntity u "
-				+ "WHERE u.username = :user AND u.password = :pass";
-		
+
+		String query = "SELECT u FROM UserEntity u " + "WHERE u.username = :user AND u.password = :pass";
+
 		TypedQuery<UserEntity> q = em.createQuery(query, UserEntity.class);
 		q.setParameter("user", username);
-		q.setParameter("pass", password);
-		
+		q.setParameter("pass", hashPassword(password));
+
 		List<UserEntity> result = q.getResultList();
-		
+
 		em.close();
-		
-		//return result.size() == 1 ? result.get(0) : null;
-		
-		if(result.size() == 1) {
+
+		// return result.size() == 1 ? result.get(0) : null;
+
+		if (result.size() == 1) {
 			return result.get(0);
 		}
-		
+
 		return null;
-		
+
+	}
+
+	private String hashPassword(String password) {
+
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(password.getBytes());
+
+			byte[] bytes = md.digest();
+
+			for (int i = 0; i < bytes.length; i++) {
+				sb.append((char) bytes[i]);
+			}
+
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+
+		return sb.toString();
 	}
 }
