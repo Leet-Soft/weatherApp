@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="java.util.ArrayList"%>
-<%@page import="uni.fmi.masters.entity.StatusBean"%>
+<%@page import="uni.fmi.masters.entity.StatusEntity"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -28,8 +28,8 @@
 <body>
 
 <%
-	ArrayList<StatusBean> statuses = 
-		(ArrayList<StatusBean>)request.getAttribute("statuses");
+	ArrayList<StatusEntity> statuses = 
+		(ArrayList<StatusEntity>)request.getAttribute("statuses");
 %>
 
 <div class="home-page">
@@ -104,7 +104,9 @@
 
                         <ul class="list-group" style="min-height:241px;">
 
-						<% for(StatusBean sta : statuses) { %>
+						<%
+							for(StatusEntity sta : statuses) {
+						%>
                             <li class="list-group-item">
                                 <div class="row">
                                     <div class="col-sm-2 col-xs-3">

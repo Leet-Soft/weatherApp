@@ -1,5 +1,6 @@
 package uni.fmi.masters.repo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -23,6 +24,28 @@ public abstract class BaseRepository<T> {
 				Persistence.createEntityManagerFactory("UserPU");
 		
 		return factory.createEntityManager();
+	}
+	
+	public List<T> getAll(){
+		
+		EntityManager em = getEntityManager();
+		
+		try {
+			List<T> result = null;
+			
+			String q = "FROM " + typeParameter.getSimpleName();
+			
+			TypedQuery<T> query = em.createQuery(q, typeParameter);
+	
+			
+			result = query.getResultList();
+			
+			return result;		
+
+		}finally {
+			em.close();
+		}
+		
 	}
 	
 	public boolean insert(T entity) {

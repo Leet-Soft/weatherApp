@@ -17,8 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import uni.fmi.masters.entity.FriendsRequestsBean;
-import uni.fmi.masters.entity.StatusBean;
+import uni.fmi.masters.entity.StatusEntity;
 import uni.fmi.masters.entity.UserEntity;
+import uni.fmi.masters.repo.JPAStatusRepository;
 import uni.fmi.masters.repo.JPAUserRepository;
 
 /**
@@ -29,10 +30,10 @@ public class HelloServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	 
 	JPAUserRepository userRepo = new JPAUserRepository();
+	JPAStatusRepository statusRepo = new JPAStatusRepository();
     
-	UserEntity user = null;
-	
-	ArrayList<StatusBean> statuses = new ArrayList<>();
+	UserEntity user = null;	
+
 	ArrayList<FriendsRequestsBean> requests = 
 			new ArrayList<FriendsRequestsBean>();
 	
@@ -45,10 +46,7 @@ public class HelloServlet extends HttpServlet {
     }
     
     private void startingData() {
-        this.statuses.add(new StatusBean(30, "Варна", "Време за море!"));
-        statuses.add(new StatusBean(-68, "Аляска", "Малко захладня!"));
-        statuses.add(new StatusBean(60, "Пловдив", "Айляк майна!"));
-        
+ 
         UserEntity friend1 = 
         		new UserEntity("goshko", "hubaveca@abv.bg");
         UserEntity friend2 = 
@@ -101,8 +99,15 @@ public class HelloServlet extends HttpServlet {
 					Double.parseDouble(request.getParameter("temp"));
 			String comment = request.getParameter("comment");
 			
-			statuses.add(new StatusBean(temp, city, comment));
+			StatusEntity status = new StatusEntity();
 			
+			status.setCity(city);
+			status.setTemp(temp);
+			status.setDescription(comment);
+			status.setUser(user);
+			
+			statusRepo.insert(status);
+					
 			response.getWriter().append("completed");
 		
 			break;
@@ -127,8 +132,8 @@ public class HelloServlet extends HttpServlet {
 	}
 
 	private void goHome(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setAttribute("statuses", statuses);
-		
+		request.setAttribute("statuses", statusRepo.getAll());
+		 
 		request.getRequestDispatcher("home.jsp")
 			.forward(request, response);
 	}
@@ -177,7 +182,9 @@ public class HelloServlet extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
-		if(userRepo.findUserByUsernameAndPassword(username, password) != null) {
+		UserEntity user = userRepo.findUserByUsernameAndPassword(username, password);
+				
+		if(user != null) {
 			
 			request.setAttribute("loggedUser", user);
 			request.getRequestDispatcher("profile.jsp")

@@ -1,18 +1,23 @@
 package uni.fmi.masters.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
 public class UserEntity implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -28,6 +33,9 @@ public class UserEntity implements Serializable{
 	
 	@Column(length = 250)
 	private String avatar;
+	
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	private List<StatusEntity> statuses;
 			
 	public UserEntity(String username, String password, String email) {
 		super();
@@ -82,8 +90,15 @@ public class UserEntity implements Serializable{
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
+
+	public List<StatusEntity> getStatuses() {
+		return statuses;
+	}
+
+	public void setStatuses(List<StatusEntity> statuses) {
+		this.statuses = statuses;
+	}
 		
-	
 	
 //	CREATE TABLE USERS(
 //	ID INT PRIMARY KEY AUTO_INCREMENT, 

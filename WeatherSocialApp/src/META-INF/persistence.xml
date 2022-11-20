@@ -11,6 +11,9 @@
 		<class>
 			uni.fmi.masters.entity.UserEntity
 		</class>
+		<class>
+			uni.fmi.masters.entity.StatusEntity
+		</class>
 
 		<properties>
 			<property name="hibernate.archive.autodetection"
