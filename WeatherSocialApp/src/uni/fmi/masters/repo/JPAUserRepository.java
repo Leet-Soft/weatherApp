@@ -2,6 +2,7 @@ package uni.fmi.masters.repo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -11,6 +12,7 @@ import javax.persistence.TypedQuery;
 
 import org.hibernate.TransactionException;
 
+import uni.fmi.masters.entity.RequestEntity;
 import uni.fmi.masters.entity.UserEntity;
 
 public class JPAUserRepository extends BaseRepository<UserEntity> {
@@ -23,6 +25,32 @@ public class JPAUserRepository extends BaseRepository<UserEntity> {
 		EntityManagerFactory factory = Persistence.createEntityManagerFactory("UserPU");
 
 		return factory.createEntityManager();
+	}
+
+	public List<UserEntity> searchByUsername(String filter) {
+
+		EntityManager em = getEntityManager();
+
+		List<UserEntity> result = new ArrayList<UserEntity>();
+
+		try {
+			String query = "FROM UserEntity" 
+					+ " WHERE username like :filter";
+
+			TypedQuery<UserEntity> q = 
+					em.createQuery(query, UserEntity.class);
+
+			q.setParameter("filter", "%"+filter+"%");
+
+			result = q.getResultList();
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			em.close();
+		}
+
+		return result;
 	}
 
 	public boolean createUser(UserEntity user) {

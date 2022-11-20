@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page import="uni.fmi.masters.entity.FriendsRequestsBean"%>
+<%@page import="uni.fmi.masters.entity.RequestEntity"%>
+<%@page import="uni.fmi.masters.entity.UserEntity"%>
 <%@page import="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,8 +27,15 @@
 </head>
 <body>
 <%
-	ArrayList<FriendsRequestsBean> friends = 
-		(ArrayList<FriendsRequestsBean>)request.getAttribute("userFriends");
+	ArrayList<RequestEntity> friends = 
+		(ArrayList<RequestEntity>)request.getAttribute("userFriends");
+
+	ArrayList<UserEntity> searchResult = 
+			(ArrayList<UserEntity>)request.getAttribute("searchResult");
+
+	if(searchResult == null)
+		searchResult = new ArrayList<>();
+
 %>
 
 <div class="friends-page">
@@ -48,17 +56,60 @@
                         <h3 class="panel-title">Добави приятел</h3>
                     </div>
                     <div class="panel-body">
-
+					<form action="HelloServlet?action=search" method="post">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="search-friend" placeholder="Търси по име">
+                            <input type="text" class="form-control" name="search-name" id="search-friend" placeholder="Търси по име">
                             <span class="input-group-addon"><i class="fa fa-search"></i></span>
                         </div>
                         <div id="search-result"></div>
-
+					</form>
                     </div>
                 </div>
             </div>
             <div class="col-sm-8">
+
+				<div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Резултат</h3>
+                    </div>
+
+                    <table class="table table-striped table-bordered friends-table">
+                        <thead>
+                        <th>Снимка</th>
+                        <th>Име</th>
+                        <th class="hidden-xs">Email</th>
+                        <th class="remove-col"><span class="hidden-xs">Покани</span></th>
+                        </thead>
+                        <tbody>     
+                        
+                        <% for(UserEntity user : searchResult) { %>                  
+                       
+	                        <tr>
+	                            <td class="friend-img">
+	                                <img class="img-thumbnail" src="assets/img/user.jpg">
+	                            </td>
+	                            <td>
+	                                <span class="friend-name">
+	                                   <%= user.getUsername() %>
+	                                </span>
+	                            </td>
+	                            <td class="hidden-xs">
+	                                <span class="friend-email">
+	                            		<%= user.getEmail() %>
+	                                </span>
+	                            </td>
+	                            <td>
+	                                <button type="button" class="btn btn-info pull-right remove-friend">
+	                                    <span class="hidden-xs" 
+	                                    onclick="sendRequest(<%=user.getId()%>)"> Покани </span>
+	                                </button>
+	                            </td>
+	                        </tr>
+                     	<% } %>
+                     
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -111,9 +162,19 @@
 
 
 <script>
-    getCurrentTemp();
-    initSearch();
-    hideSearchWhenClickingOutside();
+	function sendRequest(userId){
+		
+		$.ajax({
+			method: "POST",
+			url: "HelloServlet?action=sendRequest&userId=" + userId,
+			success: function(data){
+				window.location = data.url;
+			}
+			
+		});
+		
+	}
+ 
 </script>
 </body>
 </html>

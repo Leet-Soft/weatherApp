@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,9 +17,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uni.fmi.masters.entity.FriendsRequestsBean;
+import org.json.JSONObject;
+
+import uni.fmi.masters.entity.RequestEntity;
 import uni.fmi.masters.entity.StatusEntity;
 import uni.fmi.masters.entity.UserEntity;
+import uni.fmi.masters.repo.JPARequestRepository;
 import uni.fmi.masters.repo.JPAStatusRepository;
 import uni.fmi.masters.repo.JPAUserRepository;
 
@@ -31,11 +35,12 @@ public class HelloServlet extends HttpServlet {
 	 
 	JPAUserRepository userRepo = new JPAUserRepository();
 	JPAStatusRepository statusRepo = new JPAStatusRepository();
-    
+	JPARequestRepository requestRepo = new JPARequestRepository();
+	
 	UserEntity user = null;	
 
-	ArrayList<FriendsRequestsBean> requests = 
-			new ArrayList<FriendsRequestsBean>();
+	ArrayList<RequestEntity> requests = 
+			new ArrayList<RequestEntity>();
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -45,18 +50,6 @@ public class HelloServlet extends HttpServlet {
     	
     }
     
-    private void startingData() {
- 
-        UserEntity friend1 = 
-        		new UserEntity("goshko", "hubaveca@abv.bg");
-        UserEntity friend2 = 
-        		new UserEntity("mariika", "sramejlivata@abv.bg");
-        
-        requests.add(new FriendsRequestsBean(friend1, user, "friends", true));
-        
-        requests.add(new FriendsRequestsBean(friend2, user, "friends", true));
-              
-    }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -116,12 +109,58 @@ public class HelloServlet extends HttpServlet {
 			goFriends(request, response);			
 			
 			break;
+			
+		case "search":
+			String filter = request.getParameter("search-name");
+			
+			List<UserEntity> searchResult 
+				= userRepo.searchByUsername(filter);
+			
+			request.setAttribute("searchResult", searchResult);
+			
+			goFriends(request, response);
+			
+			
+			break;
+		case "sendRequest":
+			
+			int id = Integer.parseInt(request.getParameter("userId"));
+			
+			RequestEntity newNotification = new RequestEntity();
+			
+			newNotification.setType("friendRequest");
+			newNotification.setMessage("Add me pls");
+			newNotification.setFromUser(user);
+			newNotification.setToUser(userRepo.getById(id));
+			
+			JSONObject json = new JSONObject();
+			
+			if(requestRepo.insert(newNotification)) {				
+				json.put("url", "inbox.jsp");
+			}else {
+				json.put("url", "error.jsp");
+			}
+			
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(json.toString());
+			
+			break;
+			
+		case "inbox":
+			goToInbox(request,response);
 			default:
 				
 				
 		}
 		
 	
+	}
+
+	private void goToInbox(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.getRequestDispatcher("inbox.jsp")
+			.forward(request, response);
+		
 	}
 
 	private void goFriends(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -158,10 +197,7 @@ public class HelloServlet extends HttpServlet {
 			return;
 		}
 		
-		user = new UserEntity(regUsername, regPassword, email);
-		
-		startingData();
-				
+		user = new UserEntity(regUsername, regPassword, email);		
 		
 		if(userRepo.createUser(user)) {
 			request.getRequestDispatcher("index.html")
@@ -182,7 +218,7 @@ public class HelloServlet extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
-		UserEntity user = userRepo.findUserByUsernameAndPassword(username, password);
+		user = userRepo.findUserByUsernameAndPassword(username, password);
 				
 		if(user != null) {
 			
